@@ -79,9 +79,11 @@ export class AppService implements OnModuleDestroy, OnModuleInit {
 
     const pdfBuffer = Buffer.from(
       await page.pdf({
-        format: 'A4',
+        width: 1280,
+        height: 1900,
+        scale: 1,
         printBackground: true,
-        margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' },
+        margin: { top: '0mm', right: '0mm', bottom: '0mm', left: '0mm' },
       }),
     );
 
