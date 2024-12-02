@@ -40,7 +40,7 @@ export class AppService implements OnModuleDestroy, OnModuleInit {
       try {
         this.browser = await puppeteer.launch({
           headless: true,
-          executablePath: '/usr/bin/google-chrome',
+          executablePath: '/usr/bin/chromium',
           args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -50,6 +50,7 @@ export class AppService implements OnModuleDestroy, OnModuleInit {
             '--disable-dev-shm-usage',
             '--no-xshm',
             '--single-process',
+            '--disable-features=site-per-process',
           ],
           ignoreDefaultArgs: ['--disable-extensions'],
           timeout: 60000,
