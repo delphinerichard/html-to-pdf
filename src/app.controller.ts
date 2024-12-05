@@ -8,7 +8,6 @@ import {
 import { AppService } from './app.service';
 import { UseInterceptors, UploadedFile } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { File } from 'buffer';
 import { IHealthStatus } from './app.interface';
 
 @Controller()
@@ -17,7 +16,9 @@ export class AppController {
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async buildPdf(@UploadedFile() file: File): Promise<StreamableFile> {
+  async buildPdf(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<StreamableFile> {
     try {
       const buffer = await this.appService.buildPdf(file);
       return new StreamableFile(buffer);

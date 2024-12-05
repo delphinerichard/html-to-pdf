@@ -8,10 +8,6 @@ export class AppService {
     'Erreur de lancement du navigateur Puppeteer pour de la génération du PDF';
   private readonly messageErrorCloseBrowser =
     'Erreur lors de la fermeture du navigateur Puppeteer';
-  private readonly messageErrorInitBrowser =
-    "Le navigateur Puppeteer n'a pas pu être initialisé, une erreur est survenue lors de son lancement";
-  private readonly messageSuccessGeneratePDF =
-    'Le PDF a été généré avec succès';
   private readonly messageErrorBuildPdf = 'La génération du PDF a échoué';
 
   constructor(private readonly logger: Logger) {}
@@ -47,16 +43,12 @@ export class AppService {
    * @param data
    * @returns un Buffer ou void
    */
-  async buildPdf(data): Promise<Buffer> {
+  async buildPdf(data: Express.Multer.File): Promise<Buffer> {
     try {
       await this.initBrowser();
 
       this.logger.debug('Build pdf html content');
       const htmlContent = data.buffer.toString('utf8');
-
-      if (!this.browser) {
-        throw new Error(this.messageErrorInitBrowser);
-      }
 
       this.logger.debug('Build pdf new page');
       const page = await this.browser.newPage();
@@ -90,7 +82,7 @@ export class AppService {
   /**
    * Fonction permettant de s'assurer que le navigateur est bien fermé après l'utilisation
    */
-  async closeBrowser() {
+  private async closeBrowser() {
     if (this.browser) {
       try {
         await this.browser.close();
