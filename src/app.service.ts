@@ -3,6 +3,7 @@ import * as puppeteer from 'puppeteer';
 
 @Injectable()
 export class AppService {
+  private readonly logger = new Logger(AppService.name);
   private browser: puppeteer.Browser | null = null;
   private readonly messageErrorLaunchBrowser =
     'Erreur de lancement du navigateur Puppeteer pour de la génération du PDF';
@@ -10,7 +11,7 @@ export class AppService {
     'Erreur lors de la fermeture du navigateur Puppeteer';
   private readonly messageErrorBuildPdf = 'La génération du PDF a échoué';
 
-  constructor(private readonly logger: Logger) {}
+  constructor() {}
 
   /**
    * Initialisation du navigateur Puppeteer
