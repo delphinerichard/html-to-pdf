@@ -9,7 +9,6 @@ import {
   pagePdfArrayFixture,
   pagePdfBufferFixture,
 } from 'test/fixtures/pdf.fixtures';
-import { AppService } from './app.service';
 import {
   mockBrowser,
   mockCloseBrowser,
@@ -20,19 +19,20 @@ import {
   mockSetContent,
 } from 'test/mocks/puppeteer.mocks';
 import { Logger } from '@nestjs/common';
+import { ConvertService } from './convert.service';
 
 jest.mock('puppeteer', () => ({
   launch: (...args: unknown[]) => mockLaunch(...args),
 }));
 
-describe('AppService', () => {
-  let service: AppService;
+describe('ConvertService', () => {
+  let service: ConvertService;
   let logger: Logger;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        AppService,
+        ConvertService,
         {
           provide: Logger,
           useValue: createMock<Logger>(),
@@ -40,7 +40,7 @@ describe('AppService', () => {
       ],
     }).compile();
 
-    service = module.get<AppService>(AppService);
+    service = module.get<ConvertService>(ConvertService);
     logger = module.get<Logger>(Logger);
   });
 
