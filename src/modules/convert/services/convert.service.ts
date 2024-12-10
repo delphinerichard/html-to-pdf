@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 
 @Injectable()
-export class AppService {
+export class ConvertService {
   private browser: puppeteer.Browser | null = null;
   private readonly messageErrorLaunchBrowser =
     'Erreur de lancement du navigateur Puppeteer pour de la génération du PDF';
