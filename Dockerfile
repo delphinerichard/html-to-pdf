@@ -11,13 +11,15 @@ COPY . .
 
 RUN npm run build
 
+RUN npm prune --production
+
 # Stage 2: Build image for production
 FROM node:22-alpine AS runner
 
 ENV PORT=3300
 
 # Install Chromium for Puppeteer
-RUN apk update && apk add chromium=131.0.6778.85-r0
+RUN apk update && apk add chromium>131.0.6778.85-r0
 
 WORKDIR /app
 
