@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
+import { IPageFormat } from '../convert.interface';
 
 @Injectable()
 export class ConvertService {
@@ -43,7 +44,10 @@ export class ConvertService {
    * @param data
    * @returns un Buffer ou void
    */
-  async buildPdf(data: Express.Multer.File): Promise<Buffer> {
+  async buildPdf(
+    data: Express.Multer.File,
+    format: IPageFormat,
+  ): Promise<Buffer> {
     try {
       await this.initBrowser();
 
@@ -57,8 +61,8 @@ export class ConvertService {
 
       this.logger.debug('Build pdf convert to pdf');
       const pdfArray = await page.pdf({
-        width: 1280,
-        height: 1900,
+        width: format.width ?? 1280,
+        height: format.height ?? 1900,
         scale: 1,
         printBackground: true,
         margin: { top: '0mm', right: '0mm', bottom: '0mm', left: '0mm' },

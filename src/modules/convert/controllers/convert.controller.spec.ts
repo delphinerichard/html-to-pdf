@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
 import {
+  formatDtoFixture,
   htmlInputFileFixture,
   pagePdfBufferFixture,
 } from 'test/fixtures/pdf.fixtures';
@@ -33,9 +34,12 @@ describe('ConvertController', () => {
         .spyOn(appService, 'buildPdf')
         .mockResolvedValueOnce(pagePdfBufferFixture);
 
-      await controller.buildPdf(htmlInputFileFixture);
+      await controller.buildPdf(htmlInputFileFixture, formatDtoFixture);
 
-      expect(appService.buildPdf).toHaveBeenCalledWith(htmlInputFileFixture);
+      expect(appService.buildPdf).toHaveBeenCalledWith(
+        htmlInputFileFixture,
+        formatDtoFixture,
+      );
     });
 
     it('should throw a BadRequestException when service call fails', async () => {
@@ -46,7 +50,7 @@ describe('ConvertController', () => {
       );
       jest.spyOn(appService, 'buildPdf').mockRejectedValueOnce(error);
 
-      const call = () => controller.buildPdf(htmlInputFileFixture);
+      const call = () => controller.buildPdf(htmlInputFileFixture, {});
 
       await expect(call).rejects.toThrow(exception);
     });
