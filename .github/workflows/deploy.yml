@@ -35,10 +35,10 @@ jobs:
           ls
           scp -i private_key.pem -o StrictHostKeyChecking=no ./Dockerfile $VPS_USER@$VPS_HOST:~/html-to-pdf
           scp -i private_key.pem -o StrictHostKeyChecking=no ./package*.json $VPS_USER@$VPS_HOST:~/html-to-pdf
-          scp -i private_key.pem -o StrictHostKeyChecking=no ./*config.js* $VPS_USER@$VPS_HOST:~/html-to-pdf
+          scp -i private_key.pem -o StrictHostKeyChecking=no ./nest-cli.json $VPS_USER@$VPS_HOST:~/html-to-pdf
+          scp -i private_key.pem -o StrictHostKeyChecking=no ./tsconfig* $VPS_USER@$VPS_HOST:~/html-to-pdf
           scp -i private_key.pem -o StrictHostKeyChecking=no ./docker-compose.yml $VPS_USER@$VPS_HOST:~/html-to-pdf
           scp -i private_key.pem -o StrictHostKeyChecking=no -r src $VPS_USER@$VPS_HOST:~/html-to-pdf
-          scp -i private_key.pem -o StrictHostKeyChecking=no -r static $VPS_USER@$VPS_HOST:~/html-to-pdf
 
 
           # Connect and build the Docker image
