@@ -1,0 +1,64 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Deploy to server
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          HOST_PUBLIC_URL: ${{ secrets.HOST_PUBLIC_URL }}
+          ALLOW_ORIGIN_LIST: ${{ secrets.ALLOW_ORIGIN_LIST }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          ls
+          scp -i private_key.pem -o StrictHostKeyChecking=no ./Dockerfile $VPS_USER@$VPS_HOST:~/html-to-pdf
+          scp -i private_key.pem -o StrictHostKeyChecking=no ./package*.json $VPS_USER@$VPS_HOST:~/html-to-pdf
+          scp -i private_key.pem -o StrictHostKeyChecking=no ./*config.js* $VPS_USER@$VPS_HOST:~/html-to-pdf
+          scp -i private_key.pem -o StrictHostKeyChecking=no ./docker-compose.yml $VPS_USER@$VPS_HOST:~/html-to-pdf
+          scp -i private_key.pem -o StrictHostKeyChecking=no -r src $VPS_USER@$VPS_HOST:~/html-to-pdf
+          scp -i private_key.pem -o StrictHostKeyChecking=no -r static $VPS_USER@$VPS_HOST:~/html-to-pdf
+
+
+          # Connect and build the Docker image
+          ssh -i private_key.pem -o StrictHostKeyChecking=no $VPS_USER@$VPS_HOST << 'EOF'
+            cd ~/html-to-pdf
+            
+            VERSION=v$(grep -Po "version\":\s\"\K(\d\.\d\.\d)" ./package.json)
+            if [[ "$VERSION" == "v" ]]; then
+              VERSION=latest
+            fi
+
+            # Build the Docker image with a dynamic tag
+            docker build -t dj/html-to-pdf:$VERSION .
+
+            # Export environment variables used in docker-compose.yml
+            export HTMLTOPDF_TAG=$VERSION
+            export HTMLTOPDF_HOST_PUBLIC_URL=$HOST_PUBLIC_URL
+            export HTMLTOPDF_ALLOW_ORIGIN_LIST=$ALLOW_ORIGIN_LIST
+
+            docker compose up -d
+            
+          EOF
+          rm -f private_key.pem

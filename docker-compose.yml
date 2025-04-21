@@ -1,0 +1,28 @@
+services:
+  html-to-pdf:
+    image: dj/html-to-pdf:${HTMLTOPDF_TAG}
+    container_name: html-to-pdf
+    restart: always
+    labels:
+      - 'traefik.enable=true'
+
+      - 'traefik.http.routers.html-to-pdf.rule=Host(`${HTMLTOPDF_HOST_PUBLIC_URL}`) && PathPrefix(`/html-to-pdf`)'
+      - 'traefik.http.routers.html-to-pdf.entrypoints=websecure'
+      - 'traefik.http.routers.html-to-pdf.tls=true'
+      - 'traefik.http.routers.html-to-pdf.tls.certresolver=le'
+      - 'traefik.http.routers.html-to-pdf.middlewares=strip-html-to-pdf,cors-header'
+      - 'traefik.http.middlewares.strip-html-to-pdf.stripPrefix.prefixes=/html-to-pdf'
+      - 'traefik.http.middlewares.cors-header.headers.accessControlAllowOriginList=${HTMLTOPDF_ALLOW_ORIGIN_LIST}'
+      - 'traefik.http.middlewares.cors-header.headers.accessControlAllowMethods=GET,POST,OPTIONS'
+      - 'traefik.http.middlewares.cors-header.headers.accessControlAllowHeaders=DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range'
+      - 'traefik.http.middlewares.cors-header.headers.accessControlExposeHeaders=Content-Length,Content-Range'
+      - 'traefik.http.middlewares.cors-header.headers.accessControlMaxAge=1728000'
+      - 'traefik.http.middlewares.cors-header.headers.addVaryHeader=true'
+      - 'traefik.http.middlewares.cors-header.headers.accessControlAllowCredentials=false'
+
+    networks:
+      - shared_network
+
+networks:
+  shared_network:
+    external: true
