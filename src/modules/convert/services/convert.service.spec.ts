@@ -3,8 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
   bufferToStringFixture,
   buildPdfLaunchOptionsFixture,
+  buildPdfPageCustomFixture,
   buildPdfPageFixture,
   buildPdfSetContentOptionsFixture,
+  formatDtoFixture,
   htmlInputFileFixture,
   pagePdfArrayFixture,
   pagePdfBufferFixture,
@@ -54,7 +56,7 @@ describe('ConvertService', () => {
       mockNewPage.mockResolvedValueOnce(mockPage);
       mockPdf.mockResolvedValueOnce(pagePdfArrayFixture);
 
-      const result = await service.buildPdf(htmlInputFileFixture);
+      const result = await service.buildPdf(htmlInputFileFixture, {});
 
       expect(mockLaunch).toHaveBeenCalledWith(buildPdfLaunchOptionsFixture);
       expect(mockNewPage).toHaveBeenCalledTimes(1);
@@ -67,13 +69,27 @@ describe('ConvertService', () => {
       expect(result).toEqual(pagePdfBufferFixture);
     });
 
+    it('should build pdf from input file and specified format', async () => {
+      mockLaunch.mockResolvedValueOnce(mockBrowser);
+      mockNewPage.mockResolvedValueOnce(mockPage);
+      mockPdf.mockResolvedValueOnce(pagePdfArrayFixture);
+
+      const result = await service.buildPdf(
+        htmlInputFileFixture,
+        formatDtoFixture,
+      );
+
+      expect(mockPdf).toHaveBeenCalledWith(buildPdfPageCustomFixture);
+      expect(result).toEqual(pagePdfBufferFixture);
+    });
+
     it('should throw if browser init fails', async () => {
       const error = new Error('Fail to launch');
       const launchErrorMessage =
         'Erreur de lancement du navigateur Puppeteer pour de la génération du PDF';
       mockLaunch.mockRejectedValueOnce(error);
 
-      const call = () => service.buildPdf(htmlInputFileFixture);
+      const call = () => service.buildPdf(htmlInputFileFixture, {});
 
       await expect(call).rejects.toThrow(new Error(launchErrorMessage));
       expect(logger.debug).toHaveBeenCalledWith('Init chromium launch');
@@ -92,7 +108,7 @@ describe('ConvertService', () => {
       mockLaunch.mockResolvedValueOnce(mockBrowser);
       mockNewPage.mockRejectedValueOnce(error);
 
-      const call = () => service.buildPdf(htmlInputFileFixture);
+      const call = () => service.buildPdf(htmlInputFileFixture, {});
 
       await expect(call).rejects.toThrow(error);
       expect(mockLaunch).toHaveBeenCalledTimes(1);
@@ -113,7 +129,7 @@ describe('ConvertService', () => {
       mockSetContent.mockRejectedValueOnce(error);
       mockCloseBrowser.mockRejectedValueOnce(closingError);
 
-      const call = () => service.buildPdf(htmlInputFileFixture);
+      const call = () => service.buildPdf(htmlInputFileFixture, {});
 
       await expect(call).rejects.toThrow(error);
       expect(mockLaunch).toHaveBeenCalledTimes(1);

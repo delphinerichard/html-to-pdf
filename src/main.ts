@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { VersioningType } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,6 +15,8 @@ async function bootstrap() {
   if (isEnvDev) {
     app.enableCors();
   }
+
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   await app.listen(port);
 }
