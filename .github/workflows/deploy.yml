@@ -27,8 +27,6 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ${{ secrets.VPS_USER }}
-          HOST_PUBLIC_URL: ${{ secrets.HOST_PUBLIC_URL }}
-          ALLOW_ORIGIN_LIST: ${{ secrets.ALLOW_ORIGIN_LIST }}
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
@@ -55,8 +53,8 @@ jobs:
 
             # Export environment variables used in docker-compose.yml
             export HTMLTOPDF_TAG=$VERSION
-            export HTMLTOPDF_HOST_PUBLIC_URL=$HOST_PUBLIC_URL
-            export HTMLTOPDF_ALLOW_ORIGIN_LIST=$ALLOW_ORIGIN_LIST
+            export HTMLTOPDF_HOST_PUBLIC_URL='${{ vars.HOST_PUBLIC_URL }}'
+            export HTMLTOPDF_ALLOW_ORIGIN_LIST='${{ vars.ALLOW_ORIGIN_LIST }}'
 
             docker compose up -d
             
